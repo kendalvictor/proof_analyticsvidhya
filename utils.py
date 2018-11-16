@@ -26,6 +26,9 @@ def null_verificator(data):
                 axis=1)
         )
         view_info.columns = ['Nulos', 'Cantidad', 'Tipo Col']
+        size = data.shape[0]
+        view_info['Porcentaje'] = view_info['Cantidad'].apply(
+            lambda x: str(np.round(0 if not x else x*100 / size, 2)) + ' %')
         return view_info
     else:
         return "DATA LIMPIA DE NULOS"

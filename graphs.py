@@ -113,3 +113,17 @@ def graphs_box_disp(serie, **kwargs):
     for _ in graphs:
         _.xaxis.label.set_color(color_label)
         _.tick_params(colors=color_label)
+
+
+def flash_analysis(data, col_init, col_out, **kwargs):
+    color_label = kwargs.get('color_label', 'black')
+    print(pd.DataFrame(data[col_init]).corrwith(data[col_out]))
+    fig, axes = plt.subplots(nrows=2, ncols=2)
+    
+    graphs = [
+        sns.lineplot(x=col_init, y=col_out, data=data, ax=axes[1,0]),
+        sns.barplot(x=col_init, y=col_out, data=data, ax=axes[1,1])
+    ]
+    for _ in graphs:
+        _.xaxis.label.set_color(color_label)
+        _.tick_params(colors=color_label)

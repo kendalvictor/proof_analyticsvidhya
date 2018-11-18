@@ -54,7 +54,7 @@ def reduce_size_data(df, category=False, default=''):
     return df
 
 
-def  add_col_dates(data, col, format_match="%d-%b-%y", month=True, day=True, month_day=True,year=True,
+def  add_col_dates(data, col, format_match="%d-%b-%y", month=True, day=True, year=True,
                    weekday=True, replace_str=False, format_str_replace='%Y/%m/%d', replicate_in_test=False):
     """
         por optimizar en casos separados para data y test_data
@@ -70,9 +70,6 @@ def  add_col_dates(data, col, format_match="%d-%b-%y", month=True, day=True, mon
     if year:
         data['year'] = pd.to_numeric(data['date'].dt.strftime('%Y'), errors='coerce')
         data['year'].fillna(-99)
-    if month_day:
-        data['month_day'] = pd.to_numeric(data['date'].dt.strftime('%m%d'), errors='coerce')
-        data['month_day'].fillna(-99)
     if weekday:
         data['weekday'] = pd.to_numeric(data['date'].dt.strftime('%w'), errors='coerce')
         data['weekday'].fillna(-99)
@@ -100,3 +97,22 @@ def get_default_args(func):
         for k, v in signature.parameters.items()
         if v.default is not inspect.Parameter.empty
     }
+
+def serie_ratio_convergencia(data, var, col_target='TARGET'):
+    df = data.groupby(
+        by=[var]
+    ).mean()[col_target]
+    del df.index.name
+    return df
+
+def replace_value_ratio(train, test, lista_vars, col_target='target'):
+    for var in lista_vars:
+        print('>> ', var.upper())
+        serie_ratio = serie_ratio_convergencia(
+            train, var, col_target=col_target
+        )
+        print(train[var].unique())
+        print(test[var].unique())
+        train[var + '_ratio'] = train[var].apply(lambda x: serie_ratio.get(x, 0))
+        test[var + '_ratio'] = test[var].apply(lambda x: serie_ratio.get(x, 0))
+    return train, test

@@ -80,6 +80,8 @@ def graph_analysis_best_number_cluster(X, range_n_clusters=range(2,11)):
 
         plt.show()
 
+       
+
 def graphs_analysis(data, col_init, col_out, **kwargs):
     color_label = kwargs.get('color_label', 'black')
     params_default = get_default_args(pd.value_counts)
@@ -101,3 +103,13 @@ def graphs_analysis(data, col_init, col_out, **kwargs):
         _.xaxis.label.set_color(color_label)
         _.tick_params(colors=color_label)
 
+def graphs_box_disp(serie, **kwargs):
+    color_label = kwargs.get('color_label', 'black')
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,5))
+    graphs = [
+        sns.boxplot(x=serie, ax=axes[0]),
+        sns.distplot(serie, kde=True, rug=False, bins=100, ax=axes[1])
+    ]
+    for _ in graphs:
+        _.xaxis.label.set_color(color_label)
+        _.tick_params(colors=color_label)

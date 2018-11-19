@@ -6,6 +6,7 @@ import pandas as pd
 
 #grafico
 import matplotlib.pyplot as plt
+from IPython.display import display_html
 
 set_parameter_csv = {
     'sep': ',',
@@ -116,3 +117,40 @@ def replace_value_ratio(train, test, lista_vars, col_target='target'):
         train[var + '_ratio'] = train[var].apply(lambda x: serie_ratio.get(x, 0))
         test[var + '_ratio'] = test[var].apply(lambda x: serie_ratio.get(x, 0))
     return train, test
+
+def ratio_convergencia(data, var, col_id='ID_CLIENTE', col_target='TARGET'):
+    print("--------------------------------------------------------")
+    print("Var", var,":")
+    df = data.groupby(
+        by=[var], 
+        as_index=False
+    ).agg(
+        {col_id:'count', col_target:'mean'}
+    ).rename(
+        columns= {col_id:'FREC', col_target: 'RT_CONVERSION'}
+    )
+    return df
+
+
+def compare_categories(cols, train, test):
+    detected = 0
+    for col in cols_str:
+        diff_cat = set(test[col].unique()) - set(train[col].unique())
+        if diff_cat:
+            detected += 1
+            print(col.upper(), diff_cat)
+            
+    if detected == 0:
+        print("CATEGORIAS HOMOGENEAS EN TRAIN Y TEST")
+
+
+def display_horizontal(*args, percent_sep=5):
+    html_str=''
+    for table in args:
+        df = table if isinstance(table, pd.DataFrame) else  pd.DataFrame(table)
+        html_str+=df.to_html()
+    display_html(
+        html_str.replace(
+            'table','table style="display:inline;padding-right:{}%"'.format(percent_sep)
+        ), 
+        raw=True)

@@ -4,6 +4,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import seaborn as sns
+sns.set(style="whitegrid")
 import numpy as np
 import pandas as pd
 
@@ -116,14 +117,17 @@ def graphs_box_disp(serie, **kwargs):
 
 
 def flash_analysis(data, col_init, col_out, **kwargs):
+    print("="*10, col_init.upper(), "="*10)
     color_label = kwargs.get('color_label', 'black')
     print(pd.DataFrame(data[col_init]).corrwith(data[col_out]))
-    fig, axes = plt.subplots(nrows=2, ncols=2)
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
     
-    graphs = [
-        sns.lineplot(x=col_init, y=col_out, data=data, ax=axes[1,0]),
-        sns.barplot(x=col_init, y=col_out, data=data, ax=axes[1,1])
-    ]
-    for _ in graphs:
-        _.xaxis.label.set_color(color_label)
-        _.tick_params(colors=color_label)
+    cross = pd.crosstab(data[col_out], data[col_init])
+    sum_total = sum([cross[col].sum() for col in cross.columns])
+    sns.heatmap(
+        cross/sum_total, 
+        annot=True, ax=axes[0], center=0, cmap="YlGnBu", fmt='.2%'
+    )
+    sns.barplot(
+        x=col_init, y=col_out, data=data, ax=axes[1]
+    )
